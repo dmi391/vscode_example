@@ -86,77 +86,7 @@
                 //"set debug remote 1",
                 "break main",
             ]
-        },
-
-
-//Конфигурация для плагина CodeLLDB
-        {
-            "preLaunchTask": "startOpenocd",
-            "logging": {"trace": true, "engineLogging": true, "exceptions": true},
-
-            "name": "CodeLLDB Debug",
-            "type": "lldb",
-            "request": "custom",
-            "targetCreateCommands": ["target create  ${workspaceFolder}/Debug/example.elf"],
-            "processCreateCommands": ["gdb-remote localhost:3333"],
-
-            "initCommands": [
-                            //"process plugin packet monitor reset halt",
-                            //"target modules load --load --set-pc-to-entry --slide 0 --file ${workspaceFolder}/Debug/example.elf",
-                            ],
-        },
-
-
-//Ещё конфигурация для плагина CodeLLDB
-        {
-            "preLaunchTask": "startOpenocd",
-            "logging": {"trace": true, "engineLogging": true, "exceptions": true},
-            "lldb.verboseLogging": true,
-
-            "name": "CodeLLDB Launch",
-            "type": "lldb",
-            "request": "launch",
-            "cwd": "${workspaceFolder}",
-            "program": "${workspaceFolder}/Debug/example.elf",
-
-            "stopOnEntry": true,
-            "initCommands": [
-                            "target create ${workspaceFolder}/Debug/example.elf",
-                            "gdb-remote localhost:3333",
-
-                            //"process launch ${workspaceFolder}/Debug/example.elf",
-                                //Это не нужно. Ошибка: error: 'A' packet returned an error: 8. Похоже что-то происходит с процессом lldb
-
-
-                            //!!Так не работает "process plugin packet monitor reset halt". error: command is not implemented :
-                                //"platform select remote-gdb-server",
-                                //"platform connect connect://localhost:3333",
-
-
-                            "target list",
-
-                            "process plugin packet monitor reset halt",
-                            "target modules load --load --slide 0 --file /home/user/workspace/example/Debug/example.elf",
-
-                            //"target modules load --load --set-pc-to-entry --slide 0 --file ${workspaceFolder}/Debug/example.elf",
-                                //Ошибка из-за --set-pc-to-entry: error: failed to set PC value to 0x10000000
-
-                            "thread backtrace",
-
-                            //"b main",
-                                //Ошибка OpenOCD (из-за того, что lldb не поддерживает rv64)
-                                    //Error: Invalid breakpoint length 0
-                                    //Error: can't add breakpoint: unknown reason
-
-                            //"frame info",
-                                //Ошибка: error: invalid frame
-
-                            //"register read pc",
-                                //Ошибка: error: invalid frame
-
-                            //Сессия почему-то завершается...
-                            ],
-        },
+        }
 
     ]
 }
