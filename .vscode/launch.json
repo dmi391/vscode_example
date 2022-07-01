@@ -1,0 +1,162 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+
+
+//Configuration for plugin "cpptools" (C/C++)
+        {
+//            "logging": {"trace": true, "engineLogging": true, "exceptions": true},
+
+//            "debugServerPath": "/home/user/eclipse_4.4.1/TOOLS/riscv-openocd-0.10.0-2020.12.1-x86_64-linux-ubuntu14/bin/openocd",
+//            "debugServerArgs": "-f ${workspaceFolder}/cfg/riscpoa.cfg",
+//            "miDebuggerServerAddress": "localhost:3333",
+
+//            "preLaunchTask": "startOpenocdHW",
+            "preLaunchTask": "startOpenocdSpike",
+
+            "name": "cpptools Debug",
+            "type": "cppdbg",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "program": "${workspaceFolder}/Debug/${workspaceFolderBasename}.elf",
+            "MIMode": "gdb",
+            "miDebuggerPath": "/home/user/eclipse_4.4.1/TOOLS/riscv64-unknown-elf-toolchain-10.2.0-2020.12.8-x86_64-linux-ubuntu14/bin/riscv64-unknown-elf-gdb",
+            "miDebuggerArgs": "${workspaceFolder}/Debug/${workspaceFolderBasename}.elf --silent",
+            "stopAtEntry": true,
+            "stopAtConnect": true,
+            "postDebugTask": "Termitate all tasks",
+
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for GDB",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": false
+                },
+                {
+                    "description": "...",
+                    "text": "-target-select remote localhost:3333",
+                    "ignoreFailures": false
+                },
+                {
+                    "description": "...",
+                    "text": "monitor reset halt",
+                    "ignoreFailures": false
+                },
+                {
+                    "description": "...",
+                    "text": "load",
+                    "ignoreFailures": false
+                },
+//                {
+//                    "description": "...",
+//                    "text": "set debug remote 1",
+//                    "ignoreFailures": false
+//                },
+                {
+                    "description": "break main",
+                    "text": "break main",
+                    "ignoreFailures": false
+                },
+            ]
+        },
+
+
+//Configuration for plugin "Native Debug"
+        {
+//            "preLaunchTask": "startOpenocdHW",
+            "preLaunchTask": "startOpenocdSpike",
+
+            "name": "Native Debug",
+            "type": "gdb",
+            "request": "attach",
+            "gdbpath": "/home/user/eclipse_4.4.1/TOOLS/riscv64-unknown-elf-toolchain-10.2.0-2020.12.8-x86_64-linux-ubuntu14/bin/riscv64-unknown-elf-gdb",
+            "debugger_args": ["--silent"],
+            "cwd": "${workspaceRoot}",
+            "executable": "${workspaceFolder}/Debug/${workspaceFolderBasename}.elf",
+            "remote": true,
+            "target": "localhost:3333",
+            "postDebugTask": "Termitate all tasks",
+
+            "autorun": [
+                "monitor reset halt",
+                "load",
+                //"set debug remote 1",
+                "break main",
+            ]
+        },
+
+
+//Конфигурация для плагина CodeLLDB
+        {
+            "preLaunchTask": "startOpenocd",
+            "logging": {"trace": true, "engineLogging": true, "exceptions": true},
+
+            "name": "CodeLLDB Debug",
+            "type": "lldb",
+            "request": "custom",
+            "targetCreateCommands": ["target create  ${workspaceFolder}/Debug/example.elf"],
+            "processCreateCommands": ["gdb-remote localhost:3333"],
+
+            "initCommands": [
+                            //"process plugin packet monitor reset halt",
+                            //"target modules load --load --set-pc-to-entry --slide 0 --file ${workspaceFolder}/Debug/example.elf",
+                            ],
+        },
+
+
+//Ещё конфигурация для плагина CodeLLDB
+        {
+            "preLaunchTask": "startOpenocd",
+            "logging": {"trace": true, "engineLogging": true, "exceptions": true},
+            "lldb.verboseLogging": true,
+
+            "name": "CodeLLDB Launch",
+            "type": "lldb",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "program": "${workspaceFolder}/Debug/example.elf",
+
+            "stopOnEntry": true,
+            "initCommands": [
+                            "target create ${workspaceFolder}/Debug/example.elf",
+                            "gdb-remote localhost:3333",
+
+                            //"process launch ${workspaceFolder}/Debug/example.elf",
+                                //Это не нужно. Ошибка: error: 'A' packet returned an error: 8. Похоже что-то происходит с процессом lldb
+
+
+                            //!!Так не работает "process plugin packet monitor reset halt". error: command is not implemented :
+                                //"platform select remote-gdb-server",
+                                //"platform connect connect://localhost:3333",
+
+
+                            "target list",
+
+                            "process plugin packet monitor reset halt",
+                            "target modules load --load --slide 0 --file /home/user/workspace/example/Debug/example.elf",
+
+                            //"target modules load --load --set-pc-to-entry --slide 0 --file ${workspaceFolder}/Debug/example.elf",
+                                //Ошибка из-за --set-pc-to-entry: error: failed to set PC value to 0x10000000
+
+                            "thread backtrace",
+
+                            //"b main",
+                                //Ошибка OpenOCD (из-за того, что lldb не поддерживает rv64)
+                                    //Error: Invalid breakpoint length 0
+                                    //Error: can't add breakpoint: unknown reason
+
+                            //"frame info",
+                                //Ошибка: error: invalid frame
+
+                            //"register read pc",
+                                //Ошибка: error: invalid frame
+
+                            //Сессия почему-то завершается...
+                            ],
+        },
+
+    ]
+}
